@@ -1,5 +1,19 @@
 import { ShallowWrapper } from "enzyme";
 import checkPropTypes from 'check-prop-types';
+import { createStore } from 'redux';
+
+import rootReducer from '../src/reducers';
+
+/**
+ * Create a testing store with imported reducers, middleware, and initial state.
+ * globals: rootReducer.
+ * @param {*} initialState
+ * @function storeFactory
+ * @returns {Store} - Redux store. 
+ */
+export const storeFactory = (initialState) => {
+    createStore(rootReducer, initialState);    
+}
 
 /**
  * Return node(s) with the given data-test attribute
