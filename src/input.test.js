@@ -7,7 +7,6 @@ import Input from './input';
 
 // mock entire module for destructuring useState on import
 // const mockSetCurrentGuess = jest.fn();
-
 // jest.mock('react', () => ({
 //     ...jest.requireActual('react'),
 //     useState: (initialState) => [initialState, mockSetCurrentGuess]

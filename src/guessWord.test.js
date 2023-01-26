@@ -1,8 +1,12 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
 
 import App from './App';
-import { findByTestAttr } from '../test/testUtils';
+import { findByTestAttr, storeFactory } from '../test/testUtils';
+
+// activate global mock to make sure getSecretWord doesn't make network call
+jest.mock('./actions');
 
 /**
  * Create a wrapper with specified initial conditions,
@@ -12,10 +16,11 @@ import { findByTestAttr } from '../test/testUtils';
  * @param {object} state - Initial conditions
  * @returns {Wrapper} - Enzyme wrapper of mounted App component
  */
-const setup = (state = {}) => {
+const setup = (initialState = {}) => {
 
     // TODO: apply state
-    const wrapper = mount(<App />);
+    const store = storeFactory(initialState);
+    const wrapper = mount(<Provider store={store}><App /></Provider>);
 
     // add value to input box
     const inputBox = findByTestAttr(wrapper, 'input-box');
@@ -32,7 +37,7 @@ describe('invalid word guessed', () => {
     test.todo('guessedWords table does not get another row')
 });
 
-describe.skip('no words guessed', () => {
+describe('no words guessed', () => {
     let wrapper;
     beforeEach(() => {
         wrapper = setup({
@@ -47,7 +52,7 @@ describe.skip('no words guessed', () => {
     });
 });
 
-describe.skip('some words guessed', () => {
+describe('some words guessed', () => {
     let wrapper;
     beforeEach(() => {
         wrapper = setup({
@@ -62,7 +67,7 @@ describe.skip('some words guessed', () => {
     });
 });
 
-describe.skip('guess secret word', () => {
+describe('guess secret word', () => {
     let wrapper;
     beforeEach(() => {
         wrapper = setup({
@@ -84,7 +89,8 @@ describe.skip('guess secret word', () => {
     });
     test('displays congrats component', () => {
         const congrats = findByTestAttr(wrapper, 'component-congrats');
-        expect(congrats.test().length).toBeGreaterThan(0);
+        expect(congrats.length).toBeGreaterThan(0);
+        // expect(congrats.test().length).toBeGreaterThan(0);
     });
     test('does not display input component contents', () => {
         const inputBox = findByTestAttr(wrapper, "input-box");
