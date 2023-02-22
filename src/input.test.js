@@ -4,6 +4,7 @@ import { findByTestAttr, checkProps, storeFactory } from '../test/testUtils';
 import { Provider } from 'react-redux';
 
 import Input from './input';
+import languageContext from './contexts/languageContext';
 
 // mock entire module for destructuring useState on import
 // const mockSetCurrentGuess = jest.fn();
@@ -13,12 +14,20 @@ import Input from './input';
 // }))
 
 /**
- * setup function for app component.
- * @returns {ShallowWrapper}
+ * create ReactWrapper for Input component testing
+ * @param {object} testValues - Context and props values for this specific test
+ * @return {ReactWrapper} - Wrapper for Input component and providers
  */
-const setup = (initialState={}, secretWord='party') => {
-    const store = storeFactory(initialState);
-    return mount(<Provider store={store}><Input secretWord={secretWord}/></Provider>);
+const setup = ({ language, secretWord, success }) => {
+    language = language || 'en';
+    secretWord = secretWord || 'party';
+    success = success || false;
+
+    return mount(
+        <languageContext.Provider value={language}>
+            <Input success={success} secretWord={secretWord} />
+        </languageContext.Provider>
+    );
 }
 
 describe('render', () => {
@@ -31,11 +40,11 @@ describe('render', () => {
             const inputComponent = findByTestAttr(wrapper, 'component-input');
             expect(inputComponent.length).toBe(1);
         });  
-        test('input box does not show', () => {
+        test('input box displays', () => {
             const inputBox = findByTestAttr(wrapper, 'input-box');
             expect(inputBox.exists()).toBe(true);
         });
-        test('submit button does not show', () => {
+        test('submit button displays', () => {
             const submitButton = findByTestAttr(wrapper, 'submit-button');
             expect(submitButton.exists()).toBe(true);
         });
@@ -49,11 +58,11 @@ describe('render', () => {
             const inputComponent = findByTestAttr(wrapper, 'component-input');
             expect(inputComponent.length).toBe(1);
         });  
-        test('input box does not show', () => {
+        test('input box does not display', () => {
             const inputBox = findByTestAttr(wrapper, 'input-box');
             expect(inputBox.exists()).toBe(false);
         });
-        test('submit button does not show', () => {
+        test('submit button does not display', () => {
             const submitButton = findByTestAttr(wrapper, 'submit-button');
             expect(submitButton.exists()).toBe(false);
         });
@@ -72,24 +81,37 @@ describe('state controlled input field', () => {
     beforeEach(() => {
         mockSetCurrentGuess.mockClear();
         originalUseState = React.useState;
-        React.useState = jest.fn(() => ["", mockSetCurrentGuess])
-        wrapper = setup({ success: false });
+        React.useState = () => ["", mockSetCurrentGuess]
+        wrapper = setup({});
     });
     afterEach(() => {
         React.useState = originalUseState;
     });
     test('state updates with value of input box upon change', () => {
         const inputBox = findByTestAttr(wrapper, 'input-box');
-
         const mockEvent = { target: { value: 'train'} };
-        inputBox.simulate("change", mockEvent);
 
+        inputBox.simulate("change", mockEvent);
         expect(mockSetCurrentGuess).toHaveBeenCalledWith('train');
     });
     test('field is cleared upon submit button click', () => {
-        const submitButton = findByTestAttr(wrapper, 'submit-button');
+        const inputBox = findByTestAttr(wrapper, 'input-box');
+        const mockEvent = { target: { value: 'train'} };
 
-        submitButton.simulate('click', { preventDefault() {} });
-        expect(mockSetCurrentGuess).toHaveBeenCalledWith("");
+        inputBox.simulate("change", mockEvent);
+        expect(mockSetCurrentGuess).toHaveBeenCalledWith('train');
+    });
+});
+
+describe('language picker', () => {
+    test('correctly renders submit string in english', () => {
+        const wrapper = setup({ language: "en" });
+        const submitButton = findByTestAttr(wrapper, 'submit-button');
+        expect(submitButton.text()).toBe('Submit');
+    });
+    test('correctly renders congrats string in emoji', () => {
+        const wrapper = setup({ language: "emoji" });
+        const submitButton = findByTestAttr(wrapper, 'submit-button');
+        expect(submitButton.text()).toBe('🚀');
     });
 });

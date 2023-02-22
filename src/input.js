@@ -5,16 +5,12 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { guessWord } from './actions';
+import languageContext from './contexts/languageContext';
+import stringsModule from './helpers/strings';
 
 function Input({ secretWord }) {
-    const [currentGuess, setCurrentGuess] = React.useState("");
-    const dispatch = useDispatch();
-    const success = useSelector(state => state.success);
-
-    if (success) {
-        return <div data-test='component-input'/>
-    }
-
+    const language = React.useContext(languageContext);
+    const [ currentGuess, setCurrentGuess ] = React.useState("");
     return (
         <div data-test="component-input">
             <form className="form-inline">
@@ -22,7 +18,7 @@ function Input({ secretWord }) {
                     data-test="input-box"
                     className="mb-2 mx-sm-3"
                     type="text"
-                    placeholder="enter guess"
+                    placeholder={stringsModule.getStringByLanguage(language, 'guessInputPlaceholder')}
                     value={currentGuess}
                     onChange={(event) => setCurrentGuess(event.target.value)}
                 />
@@ -30,12 +26,11 @@ function Input({ secretWord }) {
                     data-test="submit-button"
                     onClick={(evt) => {
                         evt.preventDefault();
-                        dispatch(guessWord(currentGuess));
                         setCurrentGuess("");
                     }}
                     className="btn btn-primary mb-2"
-                >
-                    Submit
+                    >
+                    {stringsModule.getStringByLanguage(language, 'submit')}
                 </button>
             </form>
         </div>

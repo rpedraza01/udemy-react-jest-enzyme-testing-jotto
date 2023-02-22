@@ -31,7 +31,7 @@ function App() {
 
   const [state, dispatch] = React.useReducer(
     reducer,
-    { secretWord: '', language: 'en' }
+    { secretWord: null, language: 'en' }
   )
 
   const success = useSelector(state => state.success);
@@ -66,7 +66,7 @@ function App() {
     <div data-test="component-app" className="container">
       <h1>Jotto</h1>
       <languageContext.Provider value={state.language}>
-        <div>The secret word is {state.secretWord}</div>
+        {/* <div>The secret word is {state.secretWord}</div> */}
         <LanguagePicker setLanguage={setLanguage} />
         <Congrats success={success} />
         <Input success={success} secretWord={state.secretWord} />

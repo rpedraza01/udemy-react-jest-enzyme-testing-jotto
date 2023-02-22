@@ -15,6 +15,7 @@ import { getSecretWord as mockGetSecretWord } from './actions';
 const setup = () => {
   const store = storeFactory();
   return mount(<Provider store={store}><App /></Provider>);
+  // return mount(<App />);
 }
 
 describe.each([
@@ -30,7 +31,7 @@ describe.each([
 
       const mockUseReducer = jest.fn()
         .mockReturnValue([
-          { secretWord },
+          { secretWord, language: 'en' },
           jest.fn(),
         ]);
       React.useReducer = mockUseReducer;
