@@ -10,6 +10,7 @@ import Input from './input';
 import { getSecretWord } from './actions';
 import languageContext from './contexts/languageContext';
 import successContext from './contexts/successContext';
+import guessedWordsContext from './contexts/guessedWordsContext';
 
 /**
  * @function reducer to update state, automatically called by dispatch
@@ -68,13 +69,14 @@ function App() {
     <div data-test="component-app" className="container">
       <h1>Jotto</h1>
       <languageContext.Provider value={state.language}>
-        {/* <div>The secret word is {state.secretWord}</div> */}
         <LanguagePicker setLanguage={setLanguage} />
-        <successContext.SuccessProvider>
-          <Congrats />
-          <Input secretWord={state.secretWord} />
-        </successContext.SuccessProvider>
-        <GuessedWords guessedWords={guessedWords} />
+        <guessedWordsContext.GuessedWordsProvider>
+          <successContext.SuccessProvider>
+            <Congrats />
+            <Input secretWord={state.secretWord} />
+          </successContext.SuccessProvider>
+          <GuessedWords />
+        </guessedWordsContext.GuessedWordsProvider>
       </languageContext.Provider>
     </div>
   );

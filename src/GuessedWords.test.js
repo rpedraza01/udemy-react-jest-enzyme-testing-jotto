@@ -3,6 +3,8 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { findByTestAttr } from '../test/testUtils';
 import GuessedWords from './GuessedWords';
 
+import guessedWordsContext from './contexts/guessedWordsContext';
+
 /**
  * Factory function to create a ShallowWrapper for the GuessedWords component.
  * @function setup
@@ -10,6 +12,8 @@ import GuessedWords from './GuessedWords';
  * @returns {ShallowWrapper}
  */
 const setup = (guessedWords=[]) => {
+    const mockUseGuessedWords = jest.fn().mockReturnValue([guessedWords, jest.fn()]);
+    guessedWordsContext.useGuessedWords = mockUseGuessedWords;
     return shallow(<GuessedWords />)
 };
 
