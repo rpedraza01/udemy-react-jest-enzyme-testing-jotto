@@ -5,6 +5,13 @@ import { Provider } from 'react-redux';
 import App from './App';
 import { findByTestAttr, storeFactory } from '../test/testUtils';
 
+import successContext from './contexts/successContext';
+import guessedWordsContext from './contexts/guessedWordsContext';
+
+import Congrats from './Congrats';
+import Input from './input';
+import GuessedWords from './GuessedWords';
+
 // activate global mock to make sure getSecretWord doesn't make network call
 jest.mock('./actions');
 
@@ -12,23 +19,37 @@ jest.mock('./actions');
  * Create a wrapper with specified initial conditions,
  * then submit a guessed word of 'train'
  * @function
- * 
  * @param {object} state - Initial conditions
  * @returns {Wrapper} - Enzyme wrapper of mounted App component
  */
-const setup = (initialState = {}) => {
+const setup = ({ secretWord, guessedWords, success }) => {
 
+    const wrapper = mount(
+        <guessedWordsContext.GuessedWordsProvider>
+            <successContext.SuccessProvider>
+                <Congrats />
+                <Input secretWord={secretWord} />
+                <GuessedWords />
+            </successContext.SuccessProvider>
+        </guessedWordsContext.GuessedWordsProvider>
+    );
     // TODO: apply state
-    const store = storeFactory(initialState);
-    const wrapper = mount(<Provider store={store}><App /></Provider>);
+    // const store = storeFactory(initialState);
+    // const wrapper = mount(<Provider store={store}><App /></Provider>);
 
     // add value to input box
     const inputBox = findByTestAttr(wrapper, 'input-box');
-    inputBox.simulate('change', { target: { value: 'train' } })
+    inputBox.simulate('change', { target: { value: 'train' } });
 
     // simulate click on submit button
     const submitButton = findByTestAttr(wrapper, 'submit-button');
-    submitButton.simulate('click', { preventDefault() {} })
+    submitButton.simulate('click', { preventDefault() {} });
+
+    guessedWords.map(guess => {
+        const mockEvent = { target: { value: guess.guessedWord } };
+        inputBox.simulate('change', mockEvent);
+        submitButton.simulate('click', { preventDefault() {} });
+    });
 
     return wrapper;
 }

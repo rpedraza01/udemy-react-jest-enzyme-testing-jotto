@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 
 import Input from './input';
 import languageContext from './contexts/languageContext';
+import successContext from './contexts/successContext';
+import guessedWordsContext from './contexts/guessedWordsContext';
 
 // mock entire module for destructuring useState on import
 // const mockSetCurrentGuess = jest.fn();
@@ -25,7 +27,11 @@ const setup = ({ language, secretWord, success }) => {
 
     return mount(
         <languageContext.Provider value={language}>
-            <Input success={success} secretWord={secretWord} />
+            <successContext.SuccessProvider value={[success, jest.fn()]}>
+                <guessedWordsContext.GuessedWordsProvider>
+                    <Input success={success} secretWord={secretWord} />
+                </guessedWordsContext.GuessedWordsProvider>
+            </successContext.SuccessProvider>
         </languageContext.Provider>
     );
 }
